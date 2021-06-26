@@ -74,3 +74,113 @@ c = Counter("hello world")
 print(c)  # c : Dict subclass.  Elements are stored as dictionary keys and their counts are stored as dictionary values.
 # Counter({'l': 3, 'o': 2, 'h': 1, 'e': 1, ' ': 1, 'w': 1, 'r': 1, 'd': 1})
 print(c.most_common(2))
+
+
+# 装饰器： 从设计层面：为已经存在的对象添加额外的功能
+#         从语法层面：在不改原函数的前提下，拓展原函数功能的一种函数，返回值也是一个函数
+import time
+# 原来的函数myfunc
+def myfunc():
+    print("我是函数myfunc")
+
+
+# 定义一个计时器
+def timeit(function):
+    '''
+       timeit函数负责返回一个wrapper，wrapper的参数要与原函数保持相同
+       wrapper函数负责添加额外功能
+    '''
+
+    def wrapper():
+        start = time.clock()
+        function()
+        end = time.clock()
+        print(f'函数执行所花费的时间为：{end - start}')
+
+    return wrapper
+
+
+myfunc = timeit(myfunc)
+myfunc()
+
+@timeit
+def func():
+    print("我是函数func!")
+
+func()
+
+
+class Student(object):
+    def __init__(self, name, score):
+        # 将成员设置为私有变量
+        self.__name = name  # python 解释器对外将 __name__ 变量改成了_Student_name
+        self.__score = score
+
+    def get_name(self):
+        return self.__name
+
+    def get_score(self):
+        return self.__score
+
+
+bart = Student('Bart Simpson', 59)
+print(bart.get_name())
+bart.__name = 'New Name'  # 此处__name 和类内部的__name不是一个变量
+print(bart.__name)
+print(bart.get_name())
+
+# 继承 多态
+
+
+# 正常情况下，可以给实例绑定任何属性和方法
+class Teacher(object):
+    pass
+
+
+t = Teacher()
+t.name = 'Tom'
+print(t.name)
+
+def set_age(self, age):
+    self.age = age
+
+from types import MethodType
+t.set_age = MethodType(set_age, t)
+t.set_age(35)
+print(t.age)
+
+
+class Screen(object):
+    def __init__(self, h: int, w: int):
+        self._height = h
+        self._width = w
+        self._resolution = h * w
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, h):
+        self._height = h
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, w):
+        self._width = w
+
+    @property
+    def resolution(self):
+        return self.height * self.width
+
+
+print(dir(Screen))
+s = Screen(10, 20)
+print(s.height, s.width, s.resolution)
+s.height = 16
+print(s.height)
+print(s.resolution)
+# s.resolution = 100   # AttributeError: can't set attribute
